@@ -5,8 +5,8 @@ pip install setuptools
 pip install -r requirements.txt
 
 # Run django commands
-python manage.py makemigrations
-python manage.py migrate
-python manage.py tailwind install
-python manage.py collectstatic
-python manage.py tailwind start  # (jangan aktifkan ini di production)
+python3.9 manage.py makemigrations
+python3.9 manage.py migrate
+python3.9 manage.py tailwind install
+python3.9 manage.py collectstatic
+#python3.9 manage.py tailwind start  # (jangan aktifkan ini di production)
