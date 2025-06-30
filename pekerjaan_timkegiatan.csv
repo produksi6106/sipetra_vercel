@@ -1,0 +1,109 @@
+id,nama_tim,nama_kegiatan
+1,Tim Statistik Pertanian Tanaman Pangan dan KSA,Pengumpulan Data KSA Padi
+2,Tim Statistik Pertanian Tanaman Pangan dan KSA,Pengumpulan Data KSA Jagung
+3,Tim Statistik Pertanian Tanaman Pangan dan KSA,Pengumpulan Data Ubinan Padi
+4,Tim Statistik Pertanian Tanaman Pangan dan KSA,Pengumpulan Data Ubinan Palawija
+5,Tim Statistik Pertanian Tanaman Pangan dan KSA,Pengolahan Data Ubinan Palawija
+6,Tim Statistik Pertanian Tanaman Pangan dan KSA,Updating/Listing Ubinan Palawija
+7,Tim Statistik Pertanian Tanaman Pangan dan KSA,Pengolahan Updating/Listing Ubinan Palawija
+8,Tim Statistik Industri dan PEK,Pengumpulan Data IBS Bulanan
+9,Tim Statistik Industri dan PEK,Pengumpulan Data IBS Tahunan
+10,Tim Statistik Industri dan PEK,Pengumpulan Data IMK Triwulanan
+11,Tim Statistik Industri dan PEK,Pengumpulan Data IMK Tahunan
+12,Tim Statistik Industri dan PEK,Updating DPA
+13,Tim Statistik Industri dan PEK,Pengumpulan Data Perusahaan Air Bersih Tahunan
+14,Tim Statistik Industri dan PEK,Pengumpulan Data Air Bersih Triwulanan
+15,Tim Statistik Industri dan PEK,Updating DPE
+16,Tim Statistik Industri dan PEK,Pengumpulan Data Perusahaan Non Migas Tahunan
+17,Tim Statistik Industri dan PEK,Pengumpulan Data Perusahaan Galian BH
+18,Tim Statistik Industri dan PEK,Pengumpulan Data Galian URT
+19,Tim Statistik Industri dan PEK,Pengumpulan Data Captive Power
+20,Tim Statistik Industri dan PEK,Pengumpulan Data SKTR
+21,Tim Statistik Industri dan PEK,Pengumpulan Data SKTH
+22,Tim Statistik Industri dan PEK,UDP Konstruksi
+23,Tim Statistik Tenaga Kerja Kependudukan dan Kesejahteraan Rakyat,Pengumpulan Data Susenas
+24,Tim Statistik Tenaga Kerja Kependudukan dan Kesejahteraan Rakyat,Pengumpulan Data Sakernas
+25,Tim Statistik Tenaga Kerja Kependudukan dan Kesejahteraan Rakyat,Pengumpulan Data Seruti
+26,Tim Statistik Tenaga Kerja Kependudukan dan Kesejahteraan Rakyat,Updating BS Susenas
+27,Tim Statistik Tenaga Kerja Kependudukan dan Kesejahteraan Rakyat,Updating BS Sakernas
+28,Tim Statistik Tenaga Kerja Kependudukan dan Kesejahteraan Rakyat,Pemeriksaan Dokumen Updating Susenas
+29,Tim Statistik Tenaga Kerja Kependudukan dan Kesejahteraan Rakyat,Pemeriksaan Dokumen Pencacahan Susenas
+30,Tim Statistik Tenaga Kerja Kependudukan dan Kesejahteraan Rakyat,Pengumpulan Data SUPAS 2025
+31,Tim Statistik Tenaga Kerja Kependudukan dan Kesejahteraan Rakyat,Updating Data SUPAS 2025
+32,Tim Integrasi Pengolahan dan Diseminasi Statistik,Pemutakhiran Kerangka Geospasial dan Muatan Wilkerstat SE2026
+33,Tim Integrasi Pengolahan dan Diseminasi Statistik,Pengolahan Data Susenas
+34,Tim Integrasi Pengolahan dan Diseminasi Statistik,Pengolahan Data Seruti
+35,Tim Integrasi Pengolahan dan Diseminasi Statistik,Pengolahan Pemutakhiran Susenas
+36,Tim Neraca Wilayah dan Analisis Statistik,Pengumpulan Data SKLNPRT
+37,Tim Neraca Wilayah dan Analisis Statistik,Pengumpulan Data SKTNP-Jasa
+38,Tim Neraca Wilayah dan Analisis Statistik,Pengumpulan Data PMTB
+39,Tim Neraca Wilayah dan Analisis Statistik,Pengumpulan Data Sinasi SKNP
+40,Tim Neraca Wilayah dan Analisis Statistik,Pengumpulan Data Sinasi SEEA
+41,Tim Neraca Wilayah dan Analisis Statistik,Pengumpulan Data SKSIP
+42,Tim Neraca Wilayah dan Analisis Statistik,Pengumpulan Data SKSPPI
+43,Tim Neraca Wilayah dan Analisis Statistik,Pengumpulan Data SKPS
+44,Tim Neraca Wilayah dan Analisis Statistik,Pengumpulan Data SKLNP
+45,Tim Statistik Harga,Pengumpulan Data Survei Harga Perdagangan Besar (SHPB)
+46,Tim Statistik Harga,Pengumpulan Data Survei Harga Produsen (SHP)
+47,Tim Statistik Harga,Pengumpulan Data Survei Harga Produsen (SHP-J)
+48,Tim Statistik Harga,Pengumpulan Data Survei Harga Perdesaan (HD)
+49,Tim Statistik Harga,Pengumpulan Data Survei Harga Perdesaan (HKD)
+50,Tim Statistik Harga,Pengumpulan Data Survei Harga Kemahalan Konstruksi (SHKK)
+51,Tim Statistik Harga,Pengumpulan Data Survei Harga Perdagangan Besar (SHPB) Mingguan
+52,Tim Inflasi,Pengumpulan Data SHK (HK 1.1)
+53,Tim Inflasi,Pengumpulan Data SHK (HK 1.2)
+54,Tim Inflasi,Pengumpulan Data SHK (HK 4)
+55,Tim Inflasi,Pengumpulan Data SHK (HK 5)
+56,Tim Inflasi,Pengumpulan Data SHK (HK 6)
+57,Tim Inflasi,Pengumpulan Data SHK (HK 2.1)
+58,Tim Inflasi,Pengumpulan Data SHK (HK 2.2)
+59,Tim Inflasi,Pengumpulan Data SHK (HK 3)
+60,Tim Inflasi,Pengolahan Data SHK (HK 1.1)
+61,Tim Inflasi,Pengolahan Data SHK (HK 1.2)
+62,Tim Inflasi,Pengolahan Data SHK (HK 4)
+63,Tim Inflasi,Pengolahan Data SHK (HK 5)
+64,Tim Inflasi,Pengolahan Data SHK (HK 6)
+65,Tim Inflasi,Pengolahan Data SHK (HK 2.1)
+66,Tim Inflasi,Pengolahan Data SHK (HK 2.2)
+67,Tim Inflasi,Pengolahan Data SHK (HK 3)
+68,Tim Inflasi,Pengumpulan Data SHK (HK 1.1) Outlet
+69,Tim Inflasi,Pengumpulan Data SHK (HK 1.2) Outlet
+70,Tim Inflasi,Pengumpulan Data SHK (HK 2.1) Outlet
+71,Tim Inflasi,Pengumpulan Data SHK (HK 2.2) Outlet
+72,Tim Inflasi,Listing SVPEB
+73,Tim Inflasi,Pengumpulan data SVPEB Semester I
+74,Tim Inflasi,Pengumpulan data SVPEB Semester II
+75,Tim Inflasi,Pengumpulan data SVK
+76,Tim Statistik Distribusi dan Niaga Jasa,Pengumpulan Data Poldis
+77,Tim Statistik Distribusi dan Niaga Jasa,Pengumpulan Data PAW
+78,Tim Statistik Distribusi dan Niaga Jasa,Pengumpulan Data STKU
+79,Tim Statistik Distribusi dan Niaga Jasa,Pengumpulan Data SAPB Jembatan Timbang
+80,Tim Statistik Distribusi dan Niaga Jasa,Pengumpulan Data K3
+81,Tim Statistik Distribusi dan Niaga Jasa,Pengumpulan Data BUMD
+82,Tim Statistik Distribusi dan Niaga Jasa,Pengumpulan Data VREST-UMB
+83,Tim Statistik Distribusi dan Niaga Jasa,Pengumpulan Data SKU
+84,Tim Statistik Distribusi dan Niaga Jasa,Pengumpulan Data VHTL
+85,Tim Statistik Distribusi dan Niaga Jasa,Pengumpulan Data SLK
+86,Tim Statistik Distribusi dan Niaga Jasa,Pengumpulan Data Listing E-Commerce
+87,Tim Statistik Distribusi dan Niaga Jasa,Pengumpulan Data E-Commerce
+88,Tim Statistik Distribusi dan Niaga Jasa,Pengumpulan Data VHTS
+89,Tim Statistik Distribusi dan Niaga Jasa,Pengumpulan Data Updating direktori jasa pariwisata
+90,Tim Statistik Distribusi dan Niaga Jasa,Pengumpulan Data Updating Profil Pasar
+91,Tim Statistik Distribusi dan Niaga Jasa,Pengumpulan Data Survei jasa penunjang angkutan
+92,Tim Statistik Distribusi dan Niaga Jasa,Pengumpulan Data Survei Pergudangan
+93,Tim Statistik Distribusi dan Niaga Jasa,Pengumpulan Data Survei Pola Usaha Non Pertanian
+94,Tim Statistik Ketahanan Sosial,Pengumpulan Data Survei Statistik Politik & Keamanan (Polkam)
+95,Tim Statistik Ketahanan Sosial,Pengumpulan Data Pendataan Potensi Desa (Podes)
+96,Tim Statistik Ketahanan Sosial,Pengumpulan Data Survei Perilaku Anti Korupsi (SPAK)
+97,"Tim Statistik Hortikultura, Perkebunan, Peternakan, Perikanan dan Kehutanan",Pengumpulan Data Survei Perusahaan Kehutanan
+98,"Tim Statistik Hortikultura, Perkebunan, Peternakan, Perikanan dan Kehutanan",Pengumpulan Data Pendaratan Ikan Tradisional (PIT)
+99,"Tim Statistik Hortikultura, Perkebunan, Peternakan, Perikanan dan Kehutanan",Pengumpulan Data Pelabuhan Perikanan Dan TPI (PP-TPI)
+100,"Tim Statistik Hortikultura, Perkebunan, Peternakan, Perikanan dan Kehutanan",Pengumpulan Data Bulanan Pemotongan Ternak RPH/TPH
+101,"Tim Statistik Hortikultura, Perkebunan, Peternakan, Perikanan dan Kehutanan",Listing Komstrat Kelapa Sawit
+102,"Tim Statistik Hortikultura, Perkebunan, Peternakan, Perikanan dan Kehutanan",Listing Komstrat Karet
+103,"Tim Statistik Hortikultura, Perkebunan, Peternakan, Perikanan dan Kehutanan",Pengumpulan Data Komstrat Kelapa Sawit
+104,"Tim Statistik Hortikultura, Perkebunan, Peternakan, Perikanan dan Kehutanan",Pengumpulan Data Komstrat Karet
+105,"Tim Statistik Hortikultura, Perkebunan, Peternakan, Perikanan dan Kehutanan",Pengumpulan Data Survei Usaha Non Rumah Tangga (VN-Horti)
+106,"Tim Statistik Hortikultura, Perkebunan, Peternakan, Perikanan dan Kehutanan",Pengumpulan Data SKB Tahunan
+107,"Tim Statistik Hortikultura, Perkebunan, Peternakan, Perikanan dan Kehutanan",Pengumpulan Data Sedapp Online
+108,"Tim Statistik Hortikultura, Perkebunan, Peternakan, Perikanan dan Kehutanan",Pengumpulan Data Updating DPP DUTL
