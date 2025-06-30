@@ -7,7 +7,6 @@
 <h2 class="mb-4">Dashboard</h2>
 
 <div class="row g-3">
-
   <div class="col-md-4">
     <div class="card text-white bg-primary mb-3">
       <div class="card-body">
@@ -16,7 +15,6 @@
       </div>
     </div>
   </div>
-
   <div class="col-md-4">
     <div class="card text-white bg-info mb-3">
       <div class="card-body">
@@ -25,7 +23,6 @@
       </div>
     </div>
   </div>
-
   <div class="col-md-4">
     <div class="card text-white bg-success mb-3">
       <div class="card-body">
@@ -34,44 +31,31 @@
       </div>
     </div>
   </div>
-
 </div>
 
 <hr class="my-4">
 
 <h4>Rekapitulasi Honor Mitra</h4>
 
-<!-- Filter Dropdowns -->
-<div class="row mb-3">
+<!-- Filter Form -->
+<form method="get" class="row mb-3">
   <div class="col-md-3">
-    <select id="filter-bulan" class="form-select">
+    <select name="bulan" class="form-select" onchange="this.form.submit()">
       <option value="">-- Semua Bulan --</option>
-      {% for item in rekap|dictsort:"bulan_kegiatan" %}
-        {% if not item.bulan_kegiatan in bulan_seen %}
-          {% ifchanged item.bulan_kegiatan %}
-            {% with item.bulan_kegiatan as bulan %}
-              <option value="{{ bulan }}">{{ bulan }}</option>
-              {% if forloop.first %}
-                {% firstof "" %}{% endif %}
-              {% if forloop.last %}
-                {% firstof "" %}{% endif %}
-            {% endwith %}
-          {% endifchanged %}
-        {% endif %}
+      {% for bulan in dropdown_bulan %}
+        <option value="{{ bulan }}" {% if bulan == filter_bulan %}selected{% endif %}>{{ bulan }}</option>
       {% endfor %}
     </select>
   </div>
   <div class="col-md-3">
-    <select id="filter-mitra" class="form-select">
+    <select name="mitra" class="form-select" onchange="this.form.submit()">
       <option value="">-- Semua Mitra --</option>
-      {% for item in rekap|dictsort:"nama_mitra" %}
-        {% ifchanged item.nama_mitra %}
-          <option value="{{ item.nama_mitra }}">{{ item.nama_mitra }}</option>
-        {% endifchanged %}
+      {% for mitra in dropdown_mitra %}
+        <option value="{{ mitra }}" {% if mitra == filter_mitra %}selected{% endif %}>{{ mitra }}</option>
       {% endfor %}
     </select>
   </div>
-</div>
+</form>
 
 <div class="table-responsive">
   <table class="table table-bordered table-striped" id="rekapTable">
@@ -100,6 +84,33 @@
     </tbody>
   </table>
 </div>
+
+<!-- PAGINATION -->
+{% if rekap.has_other_pages %}
+<nav>
+  <ul class="pagination justify-content-center">
+    {% if rekap.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ rekap.previous_page_number }}{% if filter_bulan %}&bulan={{ filter_bulan }}{% endif %}{% if filter_mitra %}&mitra={{ filter_mitra }}{% endif %}">Sebelumnya</a>
+      </li>
+    {% endif %}
+    {% for num in rekap.paginator.page_range %}
+      {% if num == rekap.number %}
+        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+      {% elif num > rekap.number|add:'-3' and num < rekap.number|add:'3' %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ num }}{% if filter_bulan %}&bulan={{ filter_bulan }}{% endif %}{% if filter_mitra %}&mitra={{ filter_mitra }}{% endif %}">{{ num }}</a>
+        </li>
+      {% endif %}
+    {% endfor %}
+    {% if rekap.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ rekap.next_page_number }}{% if filter_bulan %}&bulan={{ filter_bulan }}{% endif %}{% if filter_mitra %}&mitra={{ filter_mitra }}{% endif %}">Berikutnya</a>
+      </li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
 
 <!-- Modal -->
 <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
@@ -133,28 +144,6 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // Filter logic
-  const bulanSelect = document.getElementById("filter-bulan");
-  const mitraSelect = document.getElementById("filter-mitra");
-
-  function applyFilters() {
-    const bulan = bulanSelect.value.toLowerCase();
-    const mitra = mitraSelect.value.toLowerCase();
-
-    document.querySelectorAll('#rekapTable tbody tr').forEach(row => {
-      const rowBulan = row.dataset.bulan.toLowerCase();
-      const rowMitra = row.dataset.mitra.toLowerCase();
-      const matchBulan = !bulan || rowBulan === bulan;
-      const matchMitra = !mitra || rowMitra === mitra;
-
-      row.style.display = (matchBulan && matchMitra) ? '' : 'none';
-    });
-  }
-
-  bulanSelect.addEventListener('change', applyFilters);
-  mitraSelect.addEventListener('change', applyFilters);
-
-  // Modal logic
   document.querySelectorAll('.clickable-row').forEach(row => {
     row.addEventListener('click', () => {
       const bulan = row.dataset.bulan;

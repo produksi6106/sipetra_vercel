@@ -66,30 +66,29 @@
     </thead>
     <tbody>
       {% for p in data %}
-      <tr>
-        <td class="text-center">{{ p.bulan_kegiatan }}</td>
-        <td>{{ p.nama_mitra }}</td>
-        <td>{{ p.tim_kerja }}</td>
-        <td>{{ p.kegiatan }}</td>
-        <td class="text-end">{{ p.volume|floatformat:0 }}</td>
-        <td class="text-center">{{ p.satuan }}</td>
-        <td class="text-end">{{ p.honor_per_satuan|intcomma }}</td>
-        <td class="text-end">{{ p.nilai_pekerjaan|intcomma }}</td>
-        <td class="text-center">{{ p.mulai_kegiatan|date:"d M Y" }}</td>
-        <td class="text-center">{{ p.selesai_kegiatan|date:"d M Y" }}</td>
-        <td>{{ p.beban_anggaran }}</td>
-        <td class="text-center">
-          <a href="{% url 'edit_data' p.id %}" class="btn btn-sm btn-warning">Edit</a>
-          <a href="{% url 'delete_data' p.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Yakin hapus data ini?')">Hapus</a>
-        </td>
-      </tr>
+        <tr>
+          <td class="text-center">{{ p.bulan_kegiatan }}</td>
+          <td>{{ p.nama_mitra }}</td>
+          <td>{{ p.tim_kerja }}</td>
+          <td>{{ p.kegiatan }}</td>
+          <td class="text-end">{{ p.volume|floatformat:0 }}</td>
+          <td class="text-center">{{ p.satuan }}</td>
+          <td class="text-end">{{ p.honor_per_satuan|intcomma }}</td>
+          <td class="text-end">{{ p.nilai_pekerjaan|intcomma }}</td>
+          <td class="text-center">{{ p.mulai_kegiatan|date:"d M Y" }}</td>
+          <td class="text-center">{{ p.selesai_kegiatan|date:"d M Y" }}</td>
+          <td>{{ p.beban_anggaran }}</td>
+          <td class="text-center">
+            <a href="{% url 'edit_data' p.id %}" class="btn btn-sm btn-warning">Edit</a>
+            <a href="{% url 'delete_data' p.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Yakin hapus data ini?')">Hapus</a>
+          </td>
+        </tr>
       {% empty %}
-      <tr>
-        <td colspan="12" class="text-center text-muted">Belum ada data</td>
-      </tr>
+        <tr>
+          <td colspan="12" class="text-center text-muted">Belum ada data</td>
+        </tr>
       {% endfor %}
     </tbody>
-
     <tfoot class="table-light fw-bold">
       <tr>
         <td colspan="4" class="text-end text-uppercase">Total</td>
@@ -102,6 +101,57 @@
     </tfoot>
   </table>
 </div>
+
+<!-- PAGINASI -->
+{% if page_obj.has_other_pages %}
+<nav>
+  <ul class="pagination justify-content-center">
+    {% if page_obj.has_previous %}
+      <li class="page-item">
+        <a class="page-link"
+           href="?page={{ page_obj.previous_page_number }}{% if request.GET.bulan %}&bulan={{ request.GET.bulan }}{% endif %}
+               {% if request.GET.mitra %}&mitra={{ request.GET.mitra }}{% endif %}
+               {% if request.GET.tim %}&tim={{ request.GET.tim }}{% endif %}
+               {% if request.GET.kegiatan %}&kegiatan={{ request.GET.kegiatan }}{% endif %}">
+          &laquo;
+        </a>
+      </li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+    {% endif %}
+
+    {% for num in page_obj.paginator.page_range %}
+      {% if num == page_obj.number %}
+        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+      {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+        <li class="page-item">
+          <a class="page-link"
+             href="?page={{ num }}{% if request.GET.bulan %}&bulan={{ request.GET.bulan }}{% endif %}
+                 {% if request.GET.mitra %}&mitra={{ request.GET.mitra }}{% endif %}
+                 {% if request.GET.tim %}&tim={{ request.GET.tim }}{% endif %}
+                 {% if request.GET.kegiatan %}&kegiatan={{ request.GET.kegiatan }}{% endif %}">
+            {{ num }}
+          </a>
+        </li>
+      {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+      <li class="page-item">
+        <a class="page-link"
+           href="?page={{ page_obj.next_page_number }}{% if request.GET.bulan %}&bulan={{ request.GET.bulan }}{% endif %}
+               {% if request.GET.mitra %}&mitra={{ request.GET.mitra }}{% endif %}
+               {% if request.GET.tim %}&tim={{ request.GET.tim }}{% endif %}
+               {% if request.GET.kegiatan %}&kegiatan={{ request.GET.kegiatan }}{% endif %}">
+          &raquo;
+        </a>
+      </li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
 
 <!-- Script untuk auto-submit saat filter berubah -->
 <script>

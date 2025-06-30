@@ -6,10 +6,11 @@ from django.db.models import Case, When, Value, IntegerField, Sum, FloatField
 from django.db.models.functions import Coalesce
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
+from django.core.paginator import Paginator
 from collections import defaultdict
 import json
 
-# Daftar bulan dan satuan (statis)
+# Daftar bulan dan satuan
 bulan_list = ["Januari", "Februari", "Maret", "April", "Mei", "Juni",
               "Juli", "Agustus", "September", "Oktober", "November", "Desember"]
 
@@ -17,7 +18,6 @@ satuan_list = sorted([
     "Dokumen", "Rumah Tangga", "Unit Usaha", "Blok Sensus", "SLS", "Peta"
 ])
 
-# Fungsi pembangun map (kegiatan per tim dan rincian anggaran)
 def build_maps():
     tim_kegiatan_map = {}
     for tim, kegiatan in TimKegiatan.objects.values_list('nama_tim', 'nama_kegiatan'):
@@ -44,7 +44,6 @@ def input_pekerjaan(request):
     if request.method == 'POST':
         total_rows = int(request.POST.get('total_rows', 0))
         errors = 0
-
         for i in range(total_rows):
             try:
                 volume_str = request.POST.get(f'volume_{i}', '').strip()
@@ -52,7 +51,6 @@ def input_pekerjaan(request):
                     messages.error(request, f"Baris {i+1}: Volume harus bilangan bulat positif.")
                     errors += 1
                     continue
-
                 volume = int(volume_str)
                 honor = int(request.POST.get(f'honor_{i}', 0))
                 nilai = volume * honor
@@ -94,50 +92,68 @@ def input_pekerjaan(request):
 
 @login_required(login_url='/login/')
 def view_data(request):
-    data = PekerjaanMitra.objects.all()
-
+    queryset = PekerjaanMitra.objects.all()
     bulan = request.GET.get('bulan')
     mitra = request.GET.get('mitra')
     tim = request.GET.get('tim')
     kegiatan = request.GET.get('kegiatan')
 
     if bulan:
-        data = data.filter(bulan_kegiatan=bulan)
+        queryset = queryset.filter(bulan_kegiatan=bulan)
     if mitra:
-        data = data.filter(nama_mitra__icontains=mitra)
+        queryset = queryset.filter(nama_mitra__icontains=mitra)
     if tim:
-        data = data.filter(tim_kerja=tim)
+        queryset = queryset.filter(tim_kerja=tim)
     if kegiatan:
-        data = data.filter(kegiatan__icontains=kegiatan)
+        queryset = queryset.filter(kegiatan__icontains=kegiatan)
 
     bulan_case = Case(
         *[When(bulan_kegiatan=nama_bulan, then=Value(i)) for i, nama_bulan in enumerate(bulan_list)],
         output_field=IntegerField()
     )
-    data = data.order_by(bulan_case, 'kegiatan', 'nama_mitra')
+    queryset = queryset.order_by(bulan_case, 'nama_mitra')
 
-    total_volume = data.aggregate(Sum('volume'))['volume__sum'] or 0
-    total_nilai = data.aggregate(Sum('nilai_pekerjaan'))['nilai_pekerjaan__sum'] or 0
+    total_volume = queryset.aggregate(Sum('volume'))['volume__sum'] or 0
+    total_nilai = queryset.aggregate(Sum('nilai_pekerjaan'))['nilai_pekerjaan__sum'] or 0
+
+    paginator = Paginator(queryset, 25)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    bulan_unik = list(PekerjaanMitra.objects.values_list('bulan_kegiatan', flat=True).distinct())
+    urut_bulan = [b for b in bulan_list if b in bulan_unik]
+    mitra_list = sorted(set(PekerjaanMitra.objects.values_list('nama_mitra', flat=True).distinct()))
+    tim_list = sorted(set(PekerjaanMitra.objects.values_list('tim_kerja', flat=True).distinct()))
+    kegiatan_list = sorted(set(PekerjaanMitra.objects.values_list('kegiatan', flat=True).distinct()))
 
     context = {
-        'data': data,
-        'bulan_list': list(PekerjaanMitra.objects.values_list('bulan_kegiatan', flat=True).distinct()) or bulan_list,
-        'tim_list': list(PekerjaanMitra.objects.values_list('tim_kerja', flat=True).distinct()),
-        'mitra_list': list(PekerjaanMitra.objects.values_list('nama_mitra', flat=True).distinct()),
-        'kegiatan_list': list(PekerjaanMitra.objects.values_list('kegiatan', flat=True).distinct()),
+        'data': page_obj,
+        'page_obj': page_obj,
+        'bulan_list': urut_bulan,
+        'tim_list': tim_list,
+        'mitra_list': mitra_list,
+        'kegiatan_list': kegiatan_list,
         'total_volume': total_volume,
         'total_nilai': total_nilai,
     }
-
     return render(request, 'pekerjaan/view.html', context)
 
 @login_required(login_url='/login/')
 def dashboard(request):
-    total_volume = PekerjaanMitra.objects.aggregate(
+    bulan_filter = request.GET.get('bulan')
+    mitra_filter = request.GET.get('mitra')
+
+    data = PekerjaanMitra.objects.all()
+    if bulan_filter:
+        data = data.filter(bulan_kegiatan=bulan_filter)
+    if mitra_filter:
+        data = data.filter(nama_mitra=mitra_filter)
+
+    total_volume = data.aggregate(
         total=Coalesce(Sum('volume'), 0, output_field=FloatField())
     )['total']
 
-    total_honor = PekerjaanMitra.objects.aggregate(
+    total_honor = data.aggregate(
         total=Coalesce(Sum('nilai_pekerjaan'), 0, output_field=FloatField())
     )['total']
 
@@ -146,27 +162,38 @@ def dashboard(request):
         output_field=IntegerField()
     )
 
-    rekap = (
-        PekerjaanMitra.objects
+    rekap_list = (
+        data
         .values('bulan_kegiatan', 'nama_mitra')
         .annotate(total_honor=Sum('nilai_pekerjaan', output_field=FloatField()))
         .order_by(bulan_order, 'nama_mitra')
     )
 
-    jumlah_mitra = PekerjaanMitra.objects.values('nama_mitra').distinct().count()
+    paginator = Paginator(rekap_list, 25)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    dropdown_bulan_raw = list(PekerjaanMitra.objects.values_list('bulan_kegiatan', flat=True).distinct())
+    dropdown_bulan = [b for b in bulan_list if b in dropdown_bulan_raw]
+    dropdown_mitra = sorted(set(PekerjaanMitra.objects.values_list('nama_mitra', flat=True).distinct()))
+
+    jumlah_mitra = data.values('nama_mitra').distinct().count()
 
     return render(request, 'pekerjaan/dashboard.html', {
         'total_volume': total_volume,
         'total_honor': total_honor,
-        'rekap': rekap,
+        'rekap': page_obj,
         'jumlah_mitra': jumlah_mitra,
+        'dropdown_bulan': dropdown_bulan,
+        'dropdown_mitra': dropdown_mitra,
+        'filter_bulan': bulan_filter,
+        'filter_mitra': mitra_filter,
     })
 
 @login_required(login_url='/login/')
 def rincian_pekerjaan(request):
     bulan = request.GET.get('bulan')
     mitra = request.GET.get('mitra')
-
     data = list(PekerjaanMitra.objects.filter(
         bulan_kegiatan=bulan,
         nama_mitra=mitra
@@ -174,7 +201,6 @@ def rincian_pekerjaan(request):
         'kegiatan', 'volume', 'satuan', 'honor_per_satuan',
         'nilai_pekerjaan', 'mulai_kegiatan', 'selesai_kegiatan'
     ))
-
     return JsonResponse({'status': 'ok', 'data': data})
 
 @login_required(login_url='/login/')
@@ -235,14 +261,12 @@ def login_view(request):
         username = request.POST['username']
         password = request.POST['password']
         user = authenticate(request, username=username, password=password)
-
         if user is not None:
             login(request, user)
             next_url = request.GET.get('next')
             return redirect(next_url) if next_url else redirect('dashboard')
         else:
             messages.error(request, 'Username atau password salah.')
-
     return render(request, 'login.html')
 
 def logout_view(request):
