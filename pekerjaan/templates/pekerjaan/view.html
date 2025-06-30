@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}View Data{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Data Pekerjaan Mitra</h2>
+
+<!-- Filter Form -->
+<form method="get" class="row g-2 mb-3" id="filter-form">
+  <div class="col-md-2">
+    <select name="bulan" class="form-select filter-select">
+      <option value="">-- Semua Bulan --</option>
+      {% for b in bulan_list %}
+        <option value="{{ b }}" {% if request.GET.bulan == b %}selected{% endif %}>{{ b }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="col-md-2">
+    <select name="mitra" class="form-select filter-select">
+      <option value="">-- Semua Mitra --</option>
+      {% for m in mitra_list %}
+        <option value="{{ m }}" {% if request.GET.mitra == m %}selected{% endif %}>{{ m }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="col-md-2">
+    <select name="tim" class="form-select filter-select">
+      <option value="">-- Semua Tim --</option>
+      {% for t in tim_list %}
+        <option value="{{ t }}" {% if request.GET.tim == t %}selected{% endif %}>{{ t }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="col-md-2">
+    <select name="kegiatan" class="form-select filter-select">
+      <option value="">-- Semua Kegiatan --</option>
+      {% for k in kegiatan_list %}
+        <option value="{{ k }}" {% if request.GET.kegiatan == k %}selected{% endif %}>{{ k }}</option>
+      {% endfor %}
+    </select>
+  </div>
+</form>
+
+<!-- Tabel Data -->
+<div class="table-responsive">
+  <table class="table table-bordered table-striped table-hover align-middle text-nowrap">
+    <thead class="table-light text-center">
+      <tr>
+        <th>Bulan</th>
+        <th>Nama Mitra</th>
+        <th>Tim Kerja</th>
+        <th>Kegiatan</th>
+        <th>Volume</th>
+        <th>Satuan</th>
+        <th>Honor per Satuan</th>
+        <th>Nilai Honor</th>
+        <th>Mulai</th>
+        <th>Selesai</th>
+        <th>Beban Anggaran</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in data %}
+      <tr>
+        <td class="text-center">{{ p.bulan_kegiatan }}</td>
+        <td>{{ p.nama_mitra }}</td>
+        <td>{{ p.tim_kerja }}</td>
+        <td>{{ p.kegiatan }}</td>
+        <td class="text-end">{{ p.volume|floatformat:0 }}</td>
+        <td class="text-center">{{ p.satuan }}</td>
+        <td class="text-end">{{ p.honor_per_satuan|intcomma }}</td>
+        <td class="text-end">{{ p.nilai_pekerjaan|intcomma }}</td>
+        <td class="text-center">{{ p.mulai_kegiatan|date:"d M Y" }}</td>
+        <td class="text-center">{{ p.selesai_kegiatan|date:"d M Y" }}</td>
+        <td>{{ p.beban_anggaran }}</td>
+        <td class="text-center">
+          <a href="{% url 'edit_data' p.id %}" class="btn btn-sm btn-warning">Edit</a>
+          <a href="{% url 'delete_data' p.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Yakin hapus data ini?')">Hapus</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="12" class="text-center text-muted">Belum ada data</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+
+    <tfoot class="table-light fw-bold">
+      <tr>
+        <td colspan="4" class="text-end text-uppercase">Total</td>
+        <td class="text-end">{{ total_volume|floatformat:0 }}</td>
+        <td></td>
+        <td></td>
+        <td class="text-end">{{ total_nilai|intcomma }}</td>
+        <td colspan="4"></td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
+<!-- Script untuk auto-submit saat filter berubah -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.filter-select').forEach(select => {
+      select.addEventListener('change', function () {
+        document.getElementById('filter-form').submit();
+      });
+    });
+  });
+</script>
+{% endblock %}

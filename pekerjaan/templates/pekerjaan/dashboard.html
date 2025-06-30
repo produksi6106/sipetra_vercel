@@ -1,0 +1,201 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Dashboard</h2>
+
+<div class="row g-3">
+
+  <div class="col-md-4">
+    <div class="card text-white bg-primary mb-3">
+      <div class="card-body">
+        <h5 class="card-title">Total Volume Pekerjaan</h5>
+        <p class="card-text display-6">{{ total_volume|floatformat:0|intcomma }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card text-white bg-info mb-3">
+      <div class="card-body">
+        <h5 class="card-title">Total Nilai Pekerjaan</h5>
+        <p class="card-text display-6">Rp {{ total_honor|floatformat:0|intcomma }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card text-white bg-success mb-3">
+      <div class="card-body">
+        <h5 class="card-title">Jumlah Mitra</h5>
+        <p class="card-text display-6">{{ jumlah_mitra|intcomma }}</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<hr class="my-4">
+
+<h4>Rekapitulasi Honor Mitra</h4>
+
+<!-- Filter Dropdowns -->
+<div class="row mb-3">
+  <div class="col-md-3">
+    <select id="filter-bulan" class="form-select">
+      <option value="">-- Semua Bulan --</option>
+      {% for item in rekap|dictsort:"bulan_kegiatan" %}
+        {% if not item.bulan_kegiatan in bulan_seen %}
+          {% ifchanged item.bulan_kegiatan %}
+            {% with item.bulan_kegiatan as bulan %}
+              <option value="{{ bulan }}">{{ bulan }}</option>
+              {% if forloop.first %}
+                {% firstof "" %}{% endif %}
+              {% if forloop.last %}
+                {% firstof "" %}{% endif %}
+            {% endwith %}
+          {% endifchanged %}
+        {% endif %}
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-3">
+    <select id="filter-mitra" class="form-select">
+      <option value="">-- Semua Mitra --</option>
+      {% for item in rekap|dictsort:"nama_mitra" %}
+        {% ifchanged item.nama_mitra %}
+          <option value="{{ item.nama_mitra }}">{{ item.nama_mitra }}</option>
+        {% endifchanged %}
+      {% endfor %}
+    </select>
+  </div>
+</div>
+
+<div class="table-responsive">
+  <table class="table table-bordered table-striped" id="rekapTable">
+    <thead class="table-light">
+      <tr>
+        <th>Bulan</th>
+        <th>Nama Mitra</th>
+        <th>Total Nilai</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in rekap %}
+      <tr class="clickable-row"
+          data-bulan="{{ item.bulan_kegiatan }}"
+          data-mitra="{{ item.nama_mitra }}"
+          style="cursor:pointer;">
+        <td>{{ item.bulan_kegiatan }}</td>
+        <td>{{ item.nama_mitra }}</td>
+        <td>Rp {{ item.total_honor|floatformat:0|intcomma }}</td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="3" class="text-center">Belum ada data honor.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="detailModalLabel">Detail Pekerjaan</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+      </div>
+      <div class="modal-body">
+        <table class="table table-sm table-bordered">
+          <thead>
+            <tr>
+              <th>Kegiatan</th>
+              <th>Volume</th>
+              <th>Satuan</th>
+              <th>Honor/Satuan</th>
+              <th>Nilai</th>
+              <th>Mulai</th>
+              <th>Selesai</th>
+            </tr>
+          </thead>
+          <tbody id="detailBody">
+            <!-- Diisi JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Filter logic
+  const bulanSelect = document.getElementById("filter-bulan");
+  const mitraSelect = document.getElementById("filter-mitra");
+
+  function applyFilters() {
+    const bulan = bulanSelect.value.toLowerCase();
+    const mitra = mitraSelect.value.toLowerCase();
+
+    document.querySelectorAll('#rekapTable tbody tr').forEach(row => {
+      const rowBulan = row.dataset.bulan.toLowerCase();
+      const rowMitra = row.dataset.mitra.toLowerCase();
+      const matchBulan = !bulan || rowBulan === bulan;
+      const matchMitra = !mitra || rowMitra === mitra;
+
+      row.style.display = (matchBulan && matchMitra) ? '' : 'none';
+    });
+  }
+
+  bulanSelect.addEventListener('change', applyFilters);
+  mitraSelect.addEventListener('change', applyFilters);
+
+  // Modal logic
+  document.querySelectorAll('.clickable-row').forEach(row => {
+    row.addEventListener('click', () => {
+      const bulan = row.dataset.bulan;
+      const mitra = row.dataset.mitra;
+      loadDetail(bulan, mitra);
+    });
+  });
+});
+
+function loadDetail(bulan, mitra) {
+  fetch(`/pekerjaan/rincian/?bulan=${encodeURIComponent(bulan)}&mitra=${encodeURIComponent(mitra)}`)
+    .then(response => response.json())
+    .then(result => {
+      const tbody = document.getElementById("detailBody");
+      tbody.innerHTML = "";
+
+      if (result.status === 'ok' && result.data.length > 0) {
+        result.data.forEach(row => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${row.kegiatan}</td>
+            <td>${row.volume}</td>
+            <td>${row.satuan}</td>
+            <td>Rp ${row.honor_per_satuan.toLocaleString('id-ID')}</td>
+            <td>Rp ${row.nilai_pekerjaan.toLocaleString('id-ID')}</td>
+            <td>${row.mulai_kegiatan || '-'}</td>
+            <td>${row.selesai_kegiatan || '-'}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } else {
+        tbody.innerHTML = "<tr><td colspan='7' class='text-center'>Tidak ada data.</td></tr>";
+      }
+
+      const modal = new bootstrap.Modal(document.getElementById('detailModal'));
+      modal.show();
+    })
+    .catch(error => {
+      alert("Gagal mengambil data.");
+      console.error(error);
+    });
+}
+</script>
+{% endblock %}

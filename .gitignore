@@ -1,0 +1,26 @@
+# Abaikan file Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Abaikan virtual environment
+venv/
+env/
+
+# Abaikan database lokal (jika pakai SQLite)
+db.sqlite3
+
+# Abaikan file .env (berisi rahasia)
+.env
+
+# Abaikan file hasil collectstatic (untuk produksi)
+staticfiles/
+
+# Abaikan log file
+*.log
+
+# Abaikan file dari editor (VSCode, PyCharm, dll)
+.vscode/
+.idea/
+*.swp
+.DS_Store

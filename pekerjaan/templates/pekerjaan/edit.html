@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+{% block title %}Edit Pekerjaan Mitra{% endblock %}
+
+{% block content %}
+<h2>Edit Pekerjaan Mitra</h2>
+
+<style>
+  .table-wrapper { overflow-x: auto; }
+  table.edit-table { min-width: 2300px; }
+  .col-bulan { width: 120px; }
+  .col-nama { width: 200px; }
+  .col-tim { width: 200px; }
+  .col-kegiatan { width: 250px; }
+  .col-volume { width: 90px; }
+  .col-satuan { width: 120px; }
+  .col-honor { width: 120px; }
+  .col-nilai { width: 120px; }
+  .col-mulai, .col-selesai { width: 90px; }
+  .col-keterangan { width: 300px; }
+  .col-beban { width: 200px; }
+</style>
+
+<form method="post" onsubmit="convertToNumberBeforeSubmit()">
+  {% csrf_token %}
+  <div class="table-wrapper">
+    <table class="table table-bordered edit-table align-middle text-nowrap">
+      <thead class="table-light">
+        <tr>
+          <th class="col-bulan">Bulan</th>
+          <th class="col-nama">Nama Mitra</th>
+          <th class="col-tim">Tim Kerja</th>
+          <th class="col-kegiatan">Kegiatan</th>
+          <th class="col-volume">Volume</th>
+          <th class="col-satuan">Satuan</th>
+          <th class="col-honor">Honor per Satuan</th>
+          <th class="col-nilai">Nilai Honor</th>
+          <th class="col-mulai">Mulai Kegiatan</th>
+          <th class="col-selesai">Selesai Kegiatan</th>
+          <th class="col-keterangan">Rincian Anggaran</th>
+          <th class="col-beban">Beban Anggaran</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <select name="bulan_kegiatan" class="form-control">
+              {% for bulan in bulan_list %}
+                <option value="{{ bulan }}" {% if bulan == data.bulan_kegiatan %}selected{% endif %}>{{ bulan }}</option>
+              {% endfor %}
+            </select>
+          </td>
+          <td>
+            <input type="text" name="nama_mitra" value="{{ data.nama_mitra }}" class="form-control" list="datalist-mitra">
+          </td>
+          <td>
+            <select name="tim_kerja" id="tim_kerja" class="form-control" onchange="updateDropdowns()">
+              <option value="">-- Pilih Tim --</option>
+              {% for tim in tim_list %}
+                <option value="{{ tim }}" {% if tim == data.tim_kerja %}selected{% endif %}>{{ tim }}</option>
+              {% endfor %}
+            </select>
+          </td>
+          <td>
+            <select name="kegiatan" id="kegiatan" class="form-control">
+              <option value="">-- Pilih Kegiatan --</option>
+            </select>
+          </td>
+          <td>
+            <input type="number" name="volume" min="1" step="1" value="{{ data.volume|floatformat:'0' }}" class="form-control" oninput="updateNilai()" required>
+          </td>
+          <td>
+            <select name="satuan" class="form-control">
+              {% for satuan in satuan_list %}
+                <option value="{{ satuan }}" {% if satuan == data.satuan %}selected{% endif %}>{{ satuan }}</option>
+              {% endfor %}
+            </select>
+          </td>
+          <td>
+            <input type="text" name="honor" id="honor" value="{{ data.honor_per_satuan }}" class="form-control" oninput="updateNilai()" />
+          </td>
+          <td>
+            <input type="text" name="nilai" id="nilai" class="form-control" readonly>
+          </td>
+          <td>
+            <input type="date" name="mulai" value="{{ data.mulai_kegiatan|date:'Y-m-d' }}" class="form-control">
+          </td>
+          <td>
+            <input type="date" name="selesai" value="{{ data.selesai_kegiatan|date:'Y-m-d' }}" class="form-control">
+          </td>
+          <td>
+            <select name="keterangan" id="keterangan" class="form-control" onchange="updateKeterangan()">
+              <option value="">-- Pilih Rincian --</option>
+            </select>
+          </td>
+          <td>
+            <input type="text" id="beban_view" class="form-control" readonly>
+            <input type="hidden" name="beban" id="beban">
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <button type="submit" class="btn btn-primary mt-2">Simpan</button>
+  <a href="{% url 'view_data' %}" class="btn btn-secondary mt-2">Batal</a>
+</form>
+
+<datalist id="datalist-mitra">
+  {% for nama in mitra_list %}
+    <option value="{{ nama }}">
+  {% endfor %}
+</datalist>
+
+<script>
+  const timKegiatanMap = {{ tim_kegiatan_map|safe }};
+  const rincianMap = {{ rincian_map|safe }};
+  const rincianBebanMap = {{ rincian_beban_map|safe }};
+  const selectedTim = "{{ data.tim_kerja|escapejs }}";
+  const selectedKegiatan = "{{ data.kegiatan|escapejs }}";
+  const selectedBeban = "{{ data.beban_anggaran|escapejs }}";
+
+  function formatRibuan(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  }
+
+  function parseRibuan(str) {
+    return parseInt(str.replace(/\./g, '')) || 0;
+  }
+
+  function updateNilai() {
+    const honorField = document.getElementById('honor');
+    const nilaiField = document.getElementById('nilai');
+    const volume = parseFloat(document.querySelector('input[name="volume"]').value) || 0;
+    const honor = parseRibuan(honorField.value);
+    const nilai = volume * honor;
+    honorField.value = formatRibuan(honor);
+    nilaiField.value = formatRibuan(nilai);
+  }
+
+  function updateDropdowns() {
+    const tim = document.getElementById('tim_kerja').value;
+    const kegiatanSelect = document.getElementById('kegiatan');
+    const rincianSelect = document.getElementById('keterangan');
+
+    kegiatanSelect.innerHTML = '<option value="">-- Pilih Kegiatan --</option>';
+    if (timKegiatanMap[tim]) {
+      timKegiatanMap[tim].forEach(function(keg) {
+        const opt = document.createElement('option');
+        opt.value = keg;
+        opt.textContent = keg;
+        kegiatanSelect.appendChild(opt);
+      });
+      kegiatanSelect.value = selectedKegiatan;
+    }
+
+    rincianSelect.innerHTML = '<option value="">-- Pilih Rincian --</option>';
+    if (rincianMap[tim]) {
+      rincianMap[tim].forEach(function(rincian) {
+        const opt = document.createElement('option');
+        opt.value = rincian;
+        opt.textContent = rincian;
+        rincianSelect.appendChild(opt);
+      });
+    }
+
+    for (const key in rincianBebanMap) {
+      if (rincianBebanMap[key] === selectedBeban && key.startsWith(tim + '||')) {
+        const rincianValue = key.split('||')[1];
+        rincianSelect.value = rincianValue;
+        break;
+      }
+    }
+
+    updateKeterangan();
+  }
+
+  function updateKeterangan() {
+    const tim = document.getElementById('tim_kerja').value;
+    const rincian = document.getElementById('keterangan').value;
+    const key = `${tim}||${rincian}`;
+    const beban = rincianBebanMap[key] || '';
+    document.getElementById('beban').value = beban;
+    document.getElementById('beban_view').value = beban;
+  }
+
+  function convertToNumberBeforeSubmit() {
+    const honorInput = document.getElementById('honor');
+    const nilaiInput = document.getElementById('nilai');
+    honorInput.value = parseRibuan(honorInput.value);
+    nilaiInput.value = parseRibuan(nilaiInput.value);
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    updateDropdowns();
+    updateNilai();
+  });
+</script>
+{% endblock %}
