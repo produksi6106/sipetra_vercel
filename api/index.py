@@ -1,0 +1,1 @@
+from mitraproject.wsgi import app  # ✅ ambil dari wsgi.py
